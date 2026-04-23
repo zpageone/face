@@ -82,8 +82,8 @@ function App() {
 
     try {
       const genAI = new GoogleGenerativeAI(apiKey);
-      // 404 에러 해결을 위해 더 널리 지원되는 gemini-1.5-flash 모델로 변경
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      // 최신 버전인 gemini-1.5-flash-latest 모델로 업데이트하여 안정성 확보
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' });
 
       const prompt = `
         당신은 수십 년의 경력을 가진 최고의 관상 전문가입니다. 
