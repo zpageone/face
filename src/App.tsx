@@ -81,9 +81,15 @@ function App() {
     setResult('');
 
     try {
+      if (!apiKey) {
+        throw new Error('VITE_GEMINI_API_KEY가 설정되지 않았습니다. .env 파일이나 Cloudflare 설정을 확인해주세요.');
+      }
+      
       const genAI = new GoogleGenerativeAI(apiKey);
-      // 최신 버전인 gemini-1.5-flash-latest 모델로 업데이트하여 안정성 확보
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' });
+      // 현재 가장 최신 모델인 gemini-2.0-flash를 적용하여 속도와 분석력을 향상시킵니다.
+      const model = genAI.getGenerativeModel({ 
+        model: 'gemini-2.0-flash',
+      });
 
       const prompt = `
         당신은 수십 년의 경력을 가진 최고의 관상 전문가입니다. 
