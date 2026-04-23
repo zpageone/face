@@ -136,29 +136,29 @@ function App() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
       {/* Header */}
-      <header className="py-6 px-4 border-b bg-white/80 backdrop-blur-md sticky top-0 z-10">
+      <header className="py-6 px-4 border-b bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-10">
         <div className="max-w-5xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-2">
             <div className="bg-indigo-600 p-2 rounded-lg text-white">
               <Sparkles size={24} />
             </div>
-            <h1 className="text-xl font-bold tracking-tight">AI 관상가</h1>
+            <h1 className="text-xl font-heading font-extrabold tracking-tight">AI 관상가</h1>
           </div>
-          <nav className="hidden md:flex gap-6 text-sm font-medium text-slate-600">
-            <a href="#" className="hover:text-indigo-600 transition-colors">홈</a>
-            <a href="#" className="hover:text-indigo-600 transition-colors">사용방법</a>
-            <a href="#" className="hover:text-indigo-600 transition-colors">문의하기</a>
+          <nav className="hidden md:flex gap-8 text-sm font-semibold text-slate-600 dark:text-slate-400">
+            <a href="#" className="hover:text-indigo-600 transition-colors uppercase tracking-widest">홈</a>
+            <a href="#" className="hover:text-indigo-600 transition-colors uppercase tracking-widest">사용방법</a>
+            <a href="#" className="hover:text-indigo-600 transition-colors uppercase tracking-widest">문의하기</a>
           </nav>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 py-12 md:py-20">
+      <main className="max-w-5xl mx-auto px-4 py-16 md:py-24">
         {/* Hero Section */}
-        <section className="text-center mb-16">
-          <h2 className="text-4xl md:text-6xl font-extrabold mb-6 bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
+        <section className="text-center mb-20">
+          <h2 className="text-5xl md:text-7xl font-heading font-black mb-8 bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 bg-clip-text text-transparent tracking-tighter text-balance">
             당신의 얼굴에 담긴 <br />운명을 확인해보세요
           </h2>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto mb-10">
+          <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-12 font-medium leading-relaxed">
             전문적인 관상학 지식을 갖춘 AI가 당신의 이목구비를 분석합니다. <br className="hidden md:block" />
             사진을 업로드하고 숨겨진 삶의 지혜를 발견해보세요.
           </p>
@@ -166,37 +166,38 @@ function App() {
 
         {/* Error Message */}
         {error && (
-          <div className="max-w-3xl mx-auto mb-6 p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 flex items-center gap-3 animate-in fade-in duration-300">
-            <AlertCircle size={20} />
-            <p className="font-medium">{error}</p>
+          <div className="max-w-3xl mx-auto mb-8 p-5 bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 rounded-2xl text-red-600 dark:text-red-400 flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+            <AlertCircle size={22} className="shrink-0 mt-0.5" />
+            <p className="font-semibold leading-relaxed">{error}</p>
           </div>
         )}
 
         {/* Upload & Analysis Section */}
-        <section className="bg-white rounded-3xl shadow-xl shadow-indigo-100 border border-indigo-50 p-6 md:p-10 max-w-3xl mx-auto">
+        <section className="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl shadow-indigo-200/50 dark:shadow-none border border-indigo-50 dark:border-slate-800 p-8 md:p-14 max-w-4xl mx-auto transition-all">
           {!selectedImage ? (
             <div 
               onClick={() => fileInputRef.current?.click()}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
-              className={`border-2 border-dashed rounded-2xl py-20 flex flex-col items-center justify-center cursor-pointer transition-all group ${
+              className={`border-2 border-dashed rounded-[2rem] py-24 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 group ${
                 isDragging 
-                  ? 'border-indigo-600 bg-indigo-50/80 scale-[1.02]' 
-                  : 'border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/50'
+                  ? 'border-indigo-600 bg-indigo-50/80 dark:bg-indigo-900/10 scale-[1.01]' 
+                  : 'border-slate-200 dark:border-slate-800 hover:border-indigo-400 hover:bg-indigo-50/30'
               }`}
             >
-              <div className={`p-4 rounded-full transition-colors mb-4 ${
+              <div className={`p-5 rounded-3xl transition-all duration-500 mb-6 shadow-sm ${
                 isDragging 
-                  ? 'bg-indigo-600 text-white' 
-                  : 'bg-slate-100 text-slate-400 group-hover:bg-indigo-100 group-hover:text-indigo-600'
+                  ? 'bg-indigo-600 text-white scale-110 rotate-3' 
+                  : 'bg-slate-50 dark:bg-slate-800 text-slate-400 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/30 group-hover:text-indigo-600 group-hover:rotate-[-3deg]'
               }`}>
-                <Upload size={40} />
+                <Upload size={48} />
               </div>
-              <p className="text-lg font-semibold text-slate-700">
-                {isDragging ? '여기에 놓으세요!' : '얼굴 사진을 업로드하거나 끌어다 놓으세요'}
+              <p className="text-2xl font-heading font-bold text-slate-800 dark:text-slate-100">
+                {isDragging ? '여기에 놓으세요!' : '얼굴 사진을 업로드하세요'}
               </p>
-              <p className="text-sm text-slate-500 mt-2">JPG, PNG 파일 (최대 5MB)</p>
+              <p className="text-slate-500 dark:text-slate-400 mt-3 font-medium">드래그 앤 드롭 또는 클릭하여 선택</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-6 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">JPG, PNG 파일 (MAX 5MB)</p>
               <input 
                 type="file" 
                 ref={fileInputRef}
@@ -206,30 +207,33 @@ function App() {
               />
             </div>
           ) : (
-            <div className="space-y-8">
-              <div className="relative aspect-square max-w-sm mx-auto rounded-2xl overflow-hidden shadow-lg ring-4 ring-indigo-100">
+            <div className="space-y-12">
+              <div className="relative aspect-square max-w-md mx-auto rounded-[2rem] overflow-hidden shadow-2xl ring-8 ring-indigo-50 dark:ring-slate-800">
                 <img 
                   src={selectedImage} 
                   alt="Selected face" 
                   className="w-full h-full object-cover"
                 />
                 {isAnalyzing && (
-                  <div className="absolute inset-0 bg-indigo-900/40 backdrop-blur-sm flex flex-col items-center justify-center text-white">
-                    <div className="animate-spin mb-4">
-                      <RefreshCcw size={48} />
+                  <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md flex flex-col items-center justify-center text-white p-8">
+                    <div className="relative mb-6">
+                      <div className="absolute inset-0 animate-ping opacity-25">
+                        <RefreshCcw size={64} className="text-indigo-400" />
+                      </div>
+                      <RefreshCcw size={64} className="animate-spin text-white" />
                     </div>
-                    <p className="text-lg font-bold animate-pulse text-center px-4">AI 관상가가 정성을 다해 <br />관상을 살피는 중입니다...</p>
+                    <p className="text-2xl font-heading font-black animate-pulse text-center leading-tight">AI 관상가가 정성을 다해 <br />관상을 살피는 중입니다...</p>
                   </div>
                 )}
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-5 justify-center">
                 {!isAnalyzing && !result && (
                   <button 
                     onClick={handleAnalyze}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 shadow-lg shadow-indigo-200 transition-all active:scale-95"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-5 rounded-2xl font-heading font-black text-xl flex items-center justify-center gap-3 shadow-xl shadow-indigo-200 dark:shadow-none transition-all hover:scale-[1.02] active:scale-95 group"
                   >
-                    <Brain size={20} />
+                    <Brain size={24} className="group-hover:animate-bounce" />
                     나의 관상 확인하기
                   </button>
                 )}
@@ -237,9 +241,9 @@ function App() {
                 {!isAnalyzing && (
                   <button 
                     onClick={reset}
-                    className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all active:scale-95"
+                    className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-10 py-5 rounded-2xl font-heading font-black text-xl flex items-center justify-center gap-3 transition-all active:scale-95"
                   >
-                    <Camera size={20} />
+                    <Camera size={24} />
                     다른 사진 선택
                   </button>
                 )}
@@ -249,52 +253,68 @@ function App() {
 
           {/* Result Section */}
           {result && !isAnalyzing && (
-            <div className="mt-12 p-8 bg-indigo-50 rounded-2xl border border-indigo-100 animate-in fade-in slide-in-from-bottom-4 duration-700">
-              <div className="flex items-center gap-2 mb-4 text-indigo-600">
-                <Sparkles size={24} />
-                <h3 className="text-xl font-bold">📜 분석 결과</h3>
+            <div className="mt-16 p-10 md:p-14 bg-indigo-50/50 dark:bg-indigo-950/10 rounded-[2rem] border border-indigo-100 dark:border-indigo-900/30 animate-in fade-in slide-in-from-bottom-10 duration-1000 relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-8 opacity-5">
+                <Sparkles size={120} className="text-indigo-600" />
               </div>
-              <p className="text-slate-700 text-lg leading-relaxed whitespace-pre-wrap">
-                {result}
-              </p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <span className="bg-white px-3 py-1 rounded-full text-xs font-bold text-indigo-600 border border-indigo-100">#정밀_관상</span>
-                <span className="bg-white px-3 py-1 rounded-full text-xs font-bold text-indigo-600 border border-indigo-100">#Gemini_Pro_Vision</span>
-                <span className="bg-white px-3 py-1 rounded-full text-xs font-bold text-indigo-600 border border-indigo-100">#운세_풀이</span>
+              
+              <div className="flex items-center gap-3 mb-8 text-indigo-600 dark:text-indigo-400">
+                <Sparkles size={32} />
+                <h3 className="text-3xl font-heading font-black tracking-tight">📜 분석 결과</h3>
+              </div>
+              
+              <div className="prose prose-indigo dark:prose-invert max-w-none">
+                <p className="text-slate-800 dark:text-slate-200 text-xl leading-relaxed whitespace-pre-wrap font-medium">
+                  {result}
+                </p>
+              </div>
+
+              <div className="mt-10 flex flex-wrap gap-3">
+                <span className="bg-white dark:bg-slate-800 px-4 py-2 rounded-xl text-sm font-bold text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/30 shadow-sm">#정밀_관상</span>
+                <span className="bg-white dark:bg-slate-800 px-4 py-2 rounded-xl text-sm font-bold text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/30 shadow-sm">#Gemini_AI_풀이</span>
+                <span className="bg-white dark:bg-slate-800 px-4 py-2 rounded-xl text-sm font-bold text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/30 shadow-sm">#운세_리포트</span>
               </div>
             </div>
           )}
         </section>
 
         {/* Features Section */}
-        <section className="mt-32 grid md:grid-cols-3 gap-8">
-          <div className="p-6 rounded-2xl bg-white border border-slate-100 shadow-sm">
-            <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 mb-4">
-              <Brain size={24} />
+        <section className="mt-40 grid md:grid-cols-3 gap-10">
+          {[
+            { 
+              icon: <Brain size={28} />, 
+              title: "전문가 페르소나", 
+              desc: "수천 년 관상학의 지혜와 현대 심리학 데이터를 학습한 AI가 실제 전문가처럼 정밀하게 풀이해 드립니다." 
+            },
+            { 
+              icon: <ShieldCheck size={28} />, 
+              title: "프라이버시 중심", 
+              desc: "이미지는 브라우저에서 직접 AI에게 전송되며 서버에 저장되지 않아 안심하고 이용할 수 있습니다." 
+            },
+            { 
+              icon: <User size={28} />, 
+              title: "맞춤형 분석", 
+              desc: "당신만이 가진 고유한 특징을 통해 재물, 직업, 인간관계에 대한 맞춤형 조언을 제공합니다." 
+            }
+          ].map((feature, i) => (
+            <div key={i} className="group p-8 rounded-[2rem] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:shadow-indigo-100 dark:hover:shadow-none transition-all duration-300 hover:-translate-y-1">
+              <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                {feature.icon}
+              </div>
+              <h4 className="text-xl font-heading font-bold mb-3 dark:text-white">{feature.title}</h4>
+              <p className="text-slate-500 dark:text-slate-400 text-base leading-relaxed">{feature.desc}</p>
             </div>
-            <h4 className="text-lg font-bold mb-2">전문가 페르소나</h4>
-            <p className="text-slate-500 text-sm">풍부한 관상학 지식을 학습한 AI가 실제 전문가처럼 상세하게 풀이해 드립니다.</p>
-          </div>
-          <div className="p-6 rounded-2xl bg-white border border-slate-100 shadow-sm">
-            <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 mb-4">
-              <ShieldCheck size={24} />
-            </div>
-            <h4 className="text-lg font-bold mb-2">프라이버시 중심</h4>
-            <p className="text-slate-500 text-sm">클라이언트 사이드 SDK를 사용하여 이미지 데이터를 브라우저에서 안전하게 처리합니다.</p>
-          </div>
-          <div className="p-6 rounded-2xl bg-white border border-slate-100 shadow-sm">
-            <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 mb-4">
-              <User size={24} />
-            </div>
-            <h4 className="text-lg font-bold mb-2">맞춤형 분석</h4>
-            <p className="text-slate-500 text-sm">재물, 직업, 연애 등 삶의 주요 영역에 대한 구체적인 분석과 조언을 제공합니다.</p>
-          </div>
+          ))}
         </section>
       </main>
 
-      <footer className="py-12 px-4 border-t border-slate-200 mt-20">
-        <div className="max-w-5xl mx-auto text-center text-slate-400 text-sm">
-          <p>© 2026 AI 관상 분석소. Powered by Gemini 1.5 Pro.</p>
+      <footer className="py-16 px-4 border-t border-slate-200 dark:border-slate-800 mt-32">
+        <div className="max-w-5xl mx-auto text-center">
+          <div className="flex items-center justify-center gap-2 mb-6 opacity-50">
+            <Sparkles size={18} className="text-indigo-600" />
+            <span className="font-heading font-black tracking-tight text-slate-900 dark:text-white">AI 관상 분석소</span>
+          </div>
+          <p className="text-slate-400 dark:text-slate-500 text-sm font-medium">© 2026 AI 관상 분석소. Powered by Gemini 2.0 Flash.</p>
         </div>
       </footer>
     </div>
