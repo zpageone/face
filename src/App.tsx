@@ -82,7 +82,6 @@ function App() {
 
     try {
       const genAI = new GoogleGenerativeAI(apiKey);
-      // Using the model suggested in your snippet
       const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
 
       const prompt = `
@@ -98,14 +97,23 @@ function App() {
       `;
 
       const imagePart = await fileToGenerativePart(imageFile);
-
       const response = await model.generateContent([prompt, imagePart]);
       const text = await response.response.text();
       
       setResult(text);
     } catch (err: any) {
-      console.error("분석 중 오류:", err);
-      setError("관상을 분석하는 중 오류가 발생했습니다. 다시 시도해 주세요.");
+      console.error("분석 중 오류 상세:", err);
+      // 구체적인 에러 메시지 출력
+      const errorMsg = err.message || '';
+      if (errorMsg.includes('API key not valid')) {
+        setError('유효하지 않은 API 키입니다. 키 설정을 다시 확인해주세요.');
+      } else if (errorMsg.includes('Quota exceeded')) {
+        setError('API 사용량이 초과되었습니다. 잠시 후 다시 시도해주세요.');
+      } else if (errorMsg.includes('model not found')) {
+        setError('사용하려는 모델(gemini-1.5-pro)을 찾을 수 없습니다.');
+      } else {
+        setError(`분석 실패: ${errorMsg || '서버와의 통신 중 오류가 발생했습니다.'}`);
+      }
     } finally {
       setIsAnalyzing(false);
     }
