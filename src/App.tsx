@@ -1,13 +1,18 @@
 import { useState, useRef } from 'react';
 import { Camera, Upload, RefreshCcw, Sparkles, Brain, User, ShieldCheck, AlertCircle } from 'lucide-react';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 function App() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Gemini API Key from environment variables (Vite prefix required for client-side)
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
   const processFile = (file: File) => {
     if (!file.type.startsWith('image/')) {
@@ -20,6 +25,7 @@ function App() {
     }
 
     setError(null);
+    setImageFile(file);
     const reader = new FileReader();
     reader.onloadend = () => {
       setSelectedImage(reader.result as string);
@@ -49,28 +55,57 @@ function App() {
     if (file) processFile(file);
   };
 
+  // Helper function to convert file to Gemini format
+  const fileToGenerativePart = async (file: File) => {
+    const base64EncodedDataPromise = new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64 = (reader.result as string).split(',')[1];
+        resolve(base64);
+      };
+      reader.readAsDataURL(file);
+    });
+    return {
+      inlineData: { data: await base64EncodedDataPromise, mimeType: file.type },
+    };
+  };
+
   const handleAnalyze = async () => {
-    if (!selectedImage) return;
+    if (!imageFile || !apiKey) {
+      if (!apiKey) setError('API 키가 설정되지 않았습니다. .env 파일에 VITE_GEMINI_API_KEY를 추가해주세요.');
+      return;
+    }
+
     setIsAnalyzing(true);
     setError(null);
-    
-    try {
-      const response = await fetch('/api/analyze', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ imageBase64: selectedImage }),
-      });
+    setResult('');
 
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || '분석 중 오류가 발생했습니다.');
-      }
-      setResult(data.result);
+    try {
+      const genAI = new GoogleGenerativeAI(apiKey);
+      // Using the model suggested in your snippet
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
+
+      const prompt = `
+        당신은 수십 년의 경력을 가진 최고의 관상 전문가입니다. 
+        첨부된 이미지 속 인물의 이목구비(눈, 코, 입, 귀, 눈썹 등)와 얼굴형을 꼼꼼히 분석해 주세요.
+        다음 항목을 포함하여 친절하고 흥미로운 어조로 관상 결과를 풀이해 주세요:
+        1. 전체적인 인상과 얼굴형의 특징
+        2. 재물운
+        3. 직업/성공운
+        4. 연애/인간관계운
+        5. 관상에 따른 조언 한 마디
+        (주의: 부정적인 내용은 너무 무겁지 않게, 긍정적인 방향으로 승화해서 설명해 주세요.)
+      `;
+
+      const imagePart = await fileToGenerativePart(imageFile);
+
+      const response = await model.generateContent([prompt, imagePart]);
+      const text = await response.response.text();
+      
+      setResult(text);
     } catch (err: any) {
-      console.error(err);
-      setError(err.message || '서버와 통신 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      console.error("분석 중 오류:", err);
+      setError("관상을 분석하는 중 오류가 발생했습니다. 다시 시도해 주세요.");
     } finally {
       setIsAnalyzing(false);
     }
@@ -78,6 +113,7 @@ function App() {
 
   const reset = () => {
     setSelectedImage(null);
+    setImageFile(null);
     setResult(null);
     setError(null);
   };
@@ -108,8 +144,8 @@ function App() {
             당신의 얼굴에 담긴 <br />운명을 확인해보세요
           </h2>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto mb-10">
-            최신 Gemini AI 기술을 활용하여 당신의 관상을 분석해드립니다. <br className="hidden md:block" />
-            사진을 업로드하고 숨겨진 재능과 행운을 발견해보세요.
+            전문적인 관상학 지식을 갖춘 AI가 당신의 이목구비를 분석합니다. <br className="hidden md:block" />
+            사진을 업로드하고 숨겨진 삶의 지혜를 발견해보세요.
           </p>
         </section>
 
@@ -167,7 +203,7 @@ function App() {
                     <div className="animate-spin mb-4">
                       <RefreshCcw size={48} />
                     </div>
-                    <p className="text-lg font-bold animate-pulse text-center px-4">AI가 관상을 정밀하게 <br />분석 중입니다...</p>
+                    <p className="text-lg font-bold animate-pulse text-center px-4">AI 관상가가 정성을 다해 <br />관상을 살피는 중입니다...</p>
                   </div>
                 )}
               </div>
@@ -179,7 +215,7 @@ function App() {
                     className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 shadow-lg shadow-indigo-200 transition-all active:scale-95"
                   >
                     <Brain size={20} />
-                    관상 분석하기
+                    나의 관상 확인하기
                   </button>
                 )}
                 
@@ -201,15 +237,15 @@ function App() {
             <div className="mt-12 p-8 bg-indigo-50 rounded-2xl border border-indigo-100 animate-in fade-in slide-in-from-bottom-4 duration-700">
               <div className="flex items-center gap-2 mb-4 text-indigo-600">
                 <Sparkles size={24} />
-                <h3 className="text-xl font-bold">Gemini AI 분석 결과</h3>
+                <h3 className="text-xl font-bold">📜 분석 결과</h3>
               </div>
-              <p className="text-slate-700 text-lg leading-relaxed italic whitespace-pre-wrap">
-                "{result}"
+              <p className="text-slate-700 text-lg leading-relaxed whitespace-pre-wrap">
+                {result}
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <span className="bg-white px-3 py-1 rounded-full text-xs font-bold text-indigo-600 border border-indigo-100">#AI관상</span>
-                <span className="bg-white px-3 py-1 rounded-full text-xs font-bold text-indigo-600 border border-indigo-100">#Gemini_Pro</span>
-                <span className="bg-white px-3 py-1 rounded-full text-xs font-bold text-indigo-600 border border-indigo-100">#오늘의_운세</span>
+                <span className="bg-white px-3 py-1 rounded-full text-xs font-bold text-indigo-600 border border-indigo-100">#정밀_관상</span>
+                <span className="bg-white px-3 py-1 rounded-full text-xs font-bold text-indigo-600 border border-indigo-100">#Gemini_Pro_Vision</span>
+                <span className="bg-white px-3 py-1 rounded-full text-xs font-bold text-indigo-600 border border-indigo-100">#운세_풀이</span>
               </div>
             </div>
           )}
@@ -221,29 +257,29 @@ function App() {
             <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 mb-4">
               <Brain size={24} />
             </div>
-            <h4 className="text-lg font-bold mb-2">Gemini 1.5 Flash 분석</h4>
-            <p className="text-slate-500 text-sm">최신 멀티모달 AI 모델이 얼굴 이미지를 직접 분석하여 정교한 관상을 풀이합니다.</p>
+            <h4 className="text-lg font-bold mb-2">전문가 페르소나</h4>
+            <p className="text-slate-500 text-sm">풍부한 관상학 지식을 학습한 AI가 실제 전문가처럼 상세하게 풀이해 드립니다.</p>
           </div>
           <div className="p-6 rounded-2xl bg-white border border-slate-100 shadow-sm">
             <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 mb-4">
               <ShieldCheck size={24} />
             </div>
-            <h4 className="text-lg font-bold mb-2">안전한 데이터 관리</h4>
-            <p className="text-slate-500 text-sm">업로드된 이미지는 Cloudflare Functions를 통해 암호화되어 전송되며 분석 직후 파기됩니다.</p>
+            <h4 className="text-lg font-bold mb-2">프라이버시 중심</h4>
+            <p className="text-slate-500 text-sm">클라이언트 사이드 SDK를 사용하여 이미지 데이터를 브라우저에서 안전하게 처리합니다.</p>
           </div>
           <div className="p-6 rounded-2xl bg-white border border-slate-100 shadow-sm">
             <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 mb-4">
               <User size={24} />
             </div>
-            <h4 className="text-lg font-bold mb-2">직관적 경험</h4>
-            <p className="text-slate-500 text-sm">드래그 앤 드롭으로 간편하게 사진을 업로드하고 결과를 즉시 확인할 수 있습니다.</p>
+            <h4 className="text-lg font-bold mb-2">맞춤형 분석</h4>
+            <p className="text-slate-500 text-sm">재물, 직업, 연애 등 삶의 주요 영역에 대한 구체적인 분석과 조언을 제공합니다.</p>
           </div>
         </section>
       </main>
 
       <footer className="py-12 px-4 border-t border-slate-200 mt-20">
         <div className="max-w-5xl mx-auto text-center text-slate-400 text-sm">
-          <p>© 2026 AI 관상가. Powered by Gemini & Cloudflare.</p>
+          <p>© 2026 AI 관상 분석소. Powered by Gemini 1.5 Pro.</p>
         </div>
       </footer>
     </div>
